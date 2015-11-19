@@ -15,10 +15,14 @@ import (
 )
 
 // ReadSrt read srt format subtitle from data slice
-func ReadSrt(data []byte) Book {
+func ReadSrt(r io.Reader) (Book, error) {
 	var book Book
 	var script Script
 
+	data, err := ioutil.ReadAll(r)
+	if err != nil {
+		return nil, err
+	}
 	b := bytes.NewBuffer(data)
 
 	const (
@@ -84,22 +88,7 @@ func ReadSrt(data []byte) Book {
 
 	}
 	/* log.Println("book = ", book) */
-	return book
-}
-
-// ReadSrtFile read srt script from a file
-func ReadSrtFile(filename string) Book {
-	data, err := ioutil.ReadFile(filename)
-	if err != nil {
-		log.Fatalln("faile to read file, ", filename)
-	}
-
-	// skip UTF-8 BOM if exists
-	if bytes.Equal(data[:3], []byte{0xEF, 0xBB, 0xBF}) {
-		data = data[3:]
-	}
-
-	return ReadSrt(data)
+	return book, nil
 }
 
 // ExportToSrtFile export script book in SRT format
