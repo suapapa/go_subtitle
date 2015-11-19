@@ -1,6 +1,7 @@
 package subtitle
 
 import (
+	"bytes"
 	"reflect"
 	"testing"
 	"time"
@@ -105,7 +106,10 @@ var (
 )
 
 func TestReadSmiComment(t *testing.T) {
-	b := ReadSmi([]byte(t1.raw))
+	b, err := ReadSmi(bytes.NewReader([]byte(t1.raw)))
+	if err != nil {
+		t.Fatal(err)
+	}
 	if !reflect.DeepEqual(b, t1.exp) {
 		t.Log("got:", b)
 		t.Log("exp:", t1.exp)
@@ -114,7 +118,10 @@ func TestReadSmiComment(t *testing.T) {
 }
 
 func TestReadSmiBR(t *testing.T) {
-	b := ReadSmi([]byte(t2.raw))
+	b, err := ReadSmi(bytes.NewReader([]byte(t2.raw)))
+	if err != nil {
+		t.Fatal(err)
+	}
 	if !reflect.DeepEqual(b, t2.exp) {
 		t.Log("got:", b)
 		t.Log("exp:", t2.exp)
@@ -123,7 +130,10 @@ func TestReadSmiBR(t *testing.T) {
 }
 
 func TestReadSmiNbsp(t *testing.T) {
-	b := ReadSmi([]byte(t3.raw))
+	b, err := ReadSmi(bytes.NewReader([]byte(t3.raw)))
+	if err != nil {
+		t.Fatal(err)
+	}
 	if !reflect.DeepEqual(b, t3.exp) {
 		t.Log("got:", b)
 		t.Log("exp:", t3.exp)
@@ -132,7 +142,10 @@ func TestReadSmiNbsp(t *testing.T) {
 }
 
 func TestReadSmiSync(t *testing.T) {
-	b := ReadSmi([]byte(t4.raw))
+	b, err := ReadSmi(bytes.NewReader([]byte(t4.raw)))
+	if err != nil {
+		t.Fatal(err)
+	}
 	if !reflect.DeepEqual(b, t4.exp) {
 		t.Log("got:", b)
 		t.Log("exp:", t4.exp)

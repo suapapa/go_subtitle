@@ -1,10 +1,7 @@
 package subtitle
 
 import (
-	"bytes"
-	"fmt"
 	"io"
-	"io/ioutil"
 	"strconv"
 	"strings"
 	"time"
@@ -45,12 +42,11 @@ func (s State) String() string {
 }
 
 // ReadSmi read smi scripts from data stream
-func ReadSmi(data []byte) (book Book) {
-	b := bytes.NewBuffer(data)
-	z := html.NewTokenizer(b)
+func ReadSmi(r io.Reader) (book Book, err error) {
+	z := html.NewTokenizer(r)
 
 	var state State
-	var r string
+	var raw string
 	var t html.Token
 
 stateLoop:
@@ -63,12 +59,10 @@ stateLoop:
 				if ttErr == io.EOF {
 					break stateLoop
 				}
-				// TODO: return error
-				fmt.Print("Error while tokenize:", ttErr)
-				return nil
+				return nil, ttErr
 			}
 
-			r = string(z.Raw())
+			raw = string(z.Raw())
 			t = z.Token()
 
 			//log.Printf("Raw: \"%s\"\n", r)
@@ -79,7 +73,7 @@ stateLoop:
 
 			// Don't care following tag tokens
 			switch {
-			case strings.TrimSpace(r) == "":
+			case strings.TrimSpace(raw) == "":
 				continue
 			case t.Type == html.EndTagToken:
 				continue
@@ -158,19 +152,4 @@ stateLoop:
 	}
 
 	return
-}
-
-// ReadSmiFile read smi scripts from a file
-func ReadSmiFile(filename string) Book {
-	data, err := ioutil.ReadFile(filename)
-	if err != nil {
-		//log.Fatalln("faile to read file, ", filename)
-	}
-
-	// skip UTF-8 BOM if exists
-	if bytes.Equal(data[:3], []byte{0xEF, 0xBB, 0xBF}) {
-		data = data[3:]
-	}
-
-	return ReadSmi(data)
 }
