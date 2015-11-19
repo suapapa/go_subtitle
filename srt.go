@@ -14,6 +14,7 @@ import (
 	"time"
 )
 
+// ReadSrt read srt format subtitle from data slice
 func ReadSrt(data []byte) Book {
 	var book Book
 	var script Script
@@ -21,12 +22,12 @@ func ReadSrt(data []byte) Book {
 	b := bytes.NewBuffer(data)
 
 	const (
-		STATE_IDX = iota
-		STATE_TS
-		STATE_SCRIPT
+		StateIdx = iota
+		StateTs
+		StateScript
 	)
 
-	state := STATE_IDX
+	state := StateIdx
 	for {
 		line, err := b.ReadString('\n')
 		if err != nil {
@@ -36,17 +37,17 @@ func ReadSrt(data []byte) Book {
 		/* log.Printf("line = '%s'", line) */
 
 		switch state {
-		case STATE_IDX:
-			/* log.Println("STATE_IDX") */
+		case StateIdx:
+			/* log.Println("StateIdx") */
 			_, err := fmt.Sscanln(line, &script.Idx)
 			if err != nil {
 				log.Fatalf("failed to parse index! in \"%s\" : %s",
 					line, err)
 			}
-			state = STATE_TS
+			state = StateTs
 
-		case STATE_TS:
-			/* log.Println("STATE_TS") */
+		case StateTs:
+			/* log.Println("StateTs") */
 			var sH, sM, sS, sMs int
 			var eH, eM, eS, eMs int
 			_, err := fmt.Sscanf(line,
@@ -65,14 +66,14 @@ func ReadSrt(data []byte) Book {
 
 			script.Text = ""
 			/* log.Println("script = ", script) */
-			state = STATE_SCRIPT
+			state = StateScript
 
-		case STATE_SCRIPT:
-			/* log.Println("STATE_SCRIPT") */
+		case StateScript:
+			/* log.Println("StateScript") */
 			if line == "" {
 				/* log.Println("script = ", script) */
 				book = append(book, script)
-				state = STATE_IDX
+				state = StateIdx
 			} else {
 				if script.Text != "" {
 					script.Text += "\n"
@@ -86,6 +87,7 @@ func ReadSrt(data []byte) Book {
 	return book
 }
 
+// ReadSrtFile read srt script from a file
 func ReadSrtFile(filename string) Book {
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
