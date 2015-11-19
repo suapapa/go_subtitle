@@ -5,12 +5,10 @@
 package subtitle
 
 import (
-	"bytes"
+	"bufio"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
-	"strings"
 	"time"
 )
 
@@ -19,26 +17,16 @@ func ReadSrt(r io.Reader) (Book, error) {
 	var book Book
 	var script Script
 
-	data, err := ioutil.ReadAll(r)
-	if err != nil {
-		return nil, err
-	}
-	b := bytes.NewBuffer(data)
-
 	const (
 		StateIdx = iota
 		StateTs
 		StateScript
 	)
-
 	state := StateIdx
-	for {
-		line, err := b.ReadString('\n')
-		if err != nil {
-			break
-		}
-		line = strings.TrimRight(line, "\r\n")
-		/* log.Printf("line = '%s'", line) */
+
+	scanner := bufio.NewScanner(r)
+	for scanner.Scan() {
+		line := scanner.Text()
 
 		switch state {
 		case StateIdx:
@@ -87,6 +75,10 @@ func ReadSrt(r io.Reader) (Book, error) {
 		}
 
 	}
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+
 	/* log.Println("book = ", book) */
 	return book, nil
 }
