@@ -7,6 +7,7 @@ package subtitle
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"strings"
@@ -40,7 +41,7 @@ func ReadSrt(data []byte) Book {
 			_, err := fmt.Sscanln(line, &script.Idx)
 			if err != nil {
 				log.Fatalf("failed to parse index! in \"%s\" : %s",
-				line,  err)
+					line, err)
 			}
 			state = STATE_TS
 
@@ -97,4 +98,46 @@ func ReadSrtFile(filename string) Book {
 	}
 
 	return ReadSrt(data)
+}
+
+// ExportToSrtFile export script book in SRT format
+func ExportToSrtFile(b Book, w io.Writer) error {
+	for i, s := range b {
+		fmt.Fprintln(w, i+1)
+
+		srtTime := func(d time.Duration) (h, m, s, ms int64) {
+			n := d.Nanoseconds()
+			// hours
+			if n > 60*60*1000000000 {
+				h = n / (60 * 60 * 1000000000)
+				n -= h * 60 * 60 * 1000000000
+			}
+			// minutes
+			if n > 60*1000000000 {
+				m = n / (60 * 1000000000)
+				n -= m * 60 * 1000000000
+			}
+			// seconds
+			if n > 1000000000 {
+				s = n / 1000000000
+				n -= s * 1000000000
+			}
+			// milliseconds
+			if n > 1000000 {
+				ms = n / 1000000
+			}
+			return
+		}
+
+		sH, sM, sS, sMs := srtTime(s.Start)
+		eH, eM, eS, eMs := srtTime(s.End)
+
+		fmt.Fprintf(w, "%02d:%02d:%02d,%03d --> %02d:%02d:%02d,%03d\n",
+			sH, sM, sS, sMs,
+			eH, eM, eS, eMs,
+		)
+		fmt.Fprintln(w, s)
+		fmt.Fprintln(w, "")
+	}
+	return nil
 }
