@@ -1,3 +1,7 @@
+// Copyright 2013-2015, Homin Lee. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 package subtitle
 
 import (
@@ -27,7 +31,11 @@ P { margin-left:8pt; margin-right:8pt; margin-bottom:2pt;
     background-color:black; }
 .KRCC { Name:KRCC; lang:kr-KR; SAMIType:CC; }
 -->`,
-		exp: Book{},
+		exp: Book{
+			Script{0, 0, 0,
+				"Tae wan Kim",
+			},
+		},
 	}
 
 	t2 = smiTest{
