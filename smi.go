@@ -65,8 +65,8 @@ stateLoop:
 			raw = string(z.Raw())
 			t = z.Token()
 
-			//log.Printf("Raw: \"%s\"\n", r)
-			//log.Printf("TKN: %v, \"%v\"\n", t.Type, t.Data)
+			// log.Printf("RAW: \"%s\"\n", raw)
+			// log.Printf("TKN: %v, \"%v\"\n", t.Type, t.Data)
 			// for _, v := range t.Attr {
 			// 	log.Printf("  %v: %v, ", v.Key, v.Val)
 			// }
@@ -78,7 +78,8 @@ stateLoop:
 			case t.Type == html.EndTagToken:
 				continue
 			case t.Type == html.StartTagToken:
-				if t.Data == "font" || t.Data == "p" {
+				if t.Data == "font" || t.Data == "p" ||
+					t.Data == "style" || t.Data == "title" {
 					continue
 				}
 			case t.Type == html.CommentToken:
@@ -111,6 +112,12 @@ stateLoop:
 
 		case StateText:
 			s := strings.TrimSpace(t.Data)
+
+			// remove html comment
+			if strings.HasPrefix(s, "<!--") && strings.HasSuffix(s, "-->") {
+				state = StateFindTag
+				continue
+			}
 
 			if lastBr {
 				lastBr = false

@@ -16,14 +16,16 @@ var (
 	mil = time.Millisecond
 
 	t1 = smiTest{
-		raw: `<!--
-{margin-left:2pt; margin-right:2pt; margin-bottom:1pt; margin-top:1pt;
-   text-align:center; font-size:20pt; font-family:Arial, Sans-serif;
-   font-weight:bold; color:white;}
-.KRCC {Name:Korean; lang:ko-KR; SAMIType:CC;}
-#STDPrn {Name:Standard Print;}
-#LargePrn {Name:Large Print (26pt); font-size:26pt;}
-#SmallPrn {Name:Small Print (14pt); font-size:14pt;}
+		raw: `<SAMI>
+<HEAD>
+<TITLE>Tae wan Kim</TITLE>
+<STYLE TYPE="text/css">
+<!--
+P { margin-left:8pt; margin-right:8pt; margin-bottom:2pt;
+    margin-top:2pt; font-size:14pt; text-align:center;
+    font-family:굴림, Arial; font-weight:normal; color:white;
+    background-color:black; }
+.KRCC { Name:KRCC; lang:kr-KR; SAMIType:CC; }
 -->`,
 		exp: Book{},
 	}
@@ -152,8 +154,3 @@ func TestReadSmiSync(t *testing.T) {
 		t.Error("Sync handling failed")
 	}
 }
-
-// func TestReadSmiFile(t *testing.T) {
-// 	b := ReadSmiFile("testdata/example.smi")
-// 	t.Log(b)
-// }
