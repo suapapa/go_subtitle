@@ -119,7 +119,7 @@ func ExportToSrtFile(b Book, w io.Writer) error {
 			sH, sM, sS, sMs,
 			eH, eM, eS, eMs,
 		)
-		fmt.Fprintln(w, s)
+		fmt.Fprintln(w, s.Text)
 		fmt.Fprintln(w, "")
 	}
 	return nil
