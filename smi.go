@@ -75,18 +75,7 @@ stateLoop:
 			// 	log.Printf("  %v: %v, ", v.Key, v.Val)
 			// }
 
-			// Don't care following tag tokens
-			switch {
-			case strings.TrimSpace(raw) == "":
-				continue
-			case t.Type == html.EndTagToken:
-				continue
-			case t.Type == html.StartTagToken:
-				if t.Data == "font" || t.Data == "p" ||
-					t.Data == "style" || t.Data == "title" {
-					continue
-				}
-			case t.Type == html.CommentToken:
+			if strings.TrimSpace(raw) == "" {
 				continue
 			}
 
