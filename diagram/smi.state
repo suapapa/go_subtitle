@@ -1,0 +1,17 @@
+@startuml
+[*]-->StateFindTag
+StateFindTag-->StateSync : Found sync tag
+StateFindTag-->StateText : Found text
+StateFindTag-->StateBr : Found br tag
+StateFindTag-->StateFindTag : others
+StateSync-->StateFindTag : keep ts for next state
+StateText-->StateFindTag
+StateBr-->StateFindTag : mark it and goto next state
+StateFindTag->StateEOF : Found EOF
+StateEOF-->[*]
+
+StateSync : set time to next_time
+StateBr : find next text and append it to previous text
+
+StateText : make a Script, set start to next_time
+@enduml

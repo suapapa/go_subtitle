@@ -13,7 +13,6 @@ import (
 	"golang.org/x/net/html"
 )
 
-var lastTs time.Duration
 var nextTs time.Duration
 var lastBr bool
 
@@ -98,7 +97,6 @@ stateLoop:
 			if err != nil {
 				panic(err)
 			}
-			lastTs = nextTs
 			nextTs = time.Duration(ts) * time.Millisecond
 			state = StateFindTag
 			continue
