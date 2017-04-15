@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-// Collection of scripts
+// Book is collection of scripts
 type Book []Script
 
 // Find a script on given timestamp.
@@ -29,34 +29,34 @@ func (b Book) Find(ts time.Duration) *Script {
 	return &b[si]
 }
 
-// A script
+// Script represents a script with index and start/end time
 type Script struct {
 	Idx        int
 	Start, End time.Duration
 	Text       string
 }
 
-// How long the script should be shown
+// Duration returns how long the script should be shown
 func (s *Script) Duration() time.Duration {
 	return s.End - s.Start
 }
 
-// Script HTML markup from text
+// TextWithoutMarkup strips HTML markup from script
 func (s *Script) TextWithoutMarkup() string {
 	return reMakrup.ReplaceAllString(s.Text, "")
 }
 
-// Check the script with given timestamp
+// CheckHit checks the script with given timestamp
 func (s *Script) CheckHit(ts time.Duration) HitStatus {
 	switch {
 	case ts < s.Start:
-		return SCR_EARLY
+		return ScrEARLY
 	case ts >= s.Start && s.End >= s.End:
-		return SCR_HIT
+		return ScrHIT
 	case s.End < ts:
-		return SCR_LATE
+		return ScrLATE
 	}
-	return SCR_INVALID
+	return ScrINVALID
 }
 
 func (s *Script) String() string {
@@ -67,10 +67,10 @@ func (s *Script) String() string {
 type HitStatus uint8
 
 const (
-	SCR_INVALID HitStatus = iota
-	SCR_EARLY             // Not yet
-	SCR_HIT               // Now
-	SCR_LATE              // Gone
+	ScrINVALID HitStatus = iota
+	ScrEARLY             // Not yet
+	ScrHIT               // Now
+	ScrLATE              // Gone
 )
 
 var reMakrup = regexp.MustCompile("</?[^<>]+?>")
